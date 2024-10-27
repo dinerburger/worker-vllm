@@ -30,7 +30,7 @@ def download(name: str, revision, type, cache_dir):
         if name.endswith(".gguf"):
             base, file = os.path.split(name)
             # GGUF repos don't normally come with tokenizers
-            pattern_sets = [file]
+            pattern_sets = [[file]]
             name = base
         else:
             pattern_sets = [model_pattern + TOKENIZER_PATTERNS[0] for model_pattern in MODEL_PATTERNS]
@@ -87,6 +87,10 @@ if __name__ == "__main__":
         "MODEL_REVISION": os.getenv("MODEL_REVISION"),
         "QUANTIZATION": os.getenv("QUANTIZATION"),
     }   
+
+    if model_name.endswith(".gguf"):
+        filename = os.path.basename(model_name)
+        metadata["MODEL_NAME"] = os.path.join(model_path, filename)
     
     # if os.getenv("TENSORIZE") == "1": TODO: Add back once tensorizer is ready
     #     serialized_uri, tensorizer_num_gpus, dtype = tensorize_model(model_path)
