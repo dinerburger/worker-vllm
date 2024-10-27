@@ -12,14 +12,16 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m pip install --upgrade -r /requirements.txt
 
 # Install vLLM (switching back to pip installs since issues that required building fork are fixed and space optimization is not as important since caching) and FlashInfer 
-RUN python3 -m pip install vllm==0.6.3 && \
-    python3 -m pip install flashinfer -i https://flashinfer.ai/whl/cu121/torch2.3
+RUN python3 -m pip install vllm && \
+    python3 -m pip install flashinfer -i https://flashinfer.ai/whl/cu121/torch2.3 && \
+    python3 -m pip install bitsandbytes>=0.42.0
 
 # Setup for Option 2: Building the Image with the Model included
-ARG MODEL_NAME=""
-ARG TOKENIZER_NAME=""
+ARG MODEL_NAME="Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q8_0.gguf"
+ARG TOKENIZER_NAME="Qwen/Qwen2.5-0.5B-Instruct"
 ARG BASE_PATH="/runpod-volume"
-ARG QUANTIZATION=""
+ARG QUANTIZATION="gguf"
+ARG LOAD_FORMAT="gguf"
 ARG MODEL_REVISION=""
 ARG TOKENIZER_REVISION=""
 
@@ -29,6 +31,7 @@ ENV MODEL_NAME=$MODEL_NAME \
     TOKENIZER_REVISION=$TOKENIZER_REVISION \
     BASE_PATH=$BASE_PATH \
     QUANTIZATION=$QUANTIZATION \
+    LOAD_FORMAT=$LOAD_FORMAT \
     HF_DATASETS_CACHE="${BASE_PATH}/huggingface-cache/datasets" \
     HUGGINGFACE_HUB_CACHE="${BASE_PATH}/huggingface-cache/hub" \
     HF_HOME="${BASE_PATH}/huggingface-cache/hub" \
